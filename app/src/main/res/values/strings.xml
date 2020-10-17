@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Random Lottery</string>
+    <string name="title">大樂透選號</string>
+    <string name="random">隨機選號</string>
+</resources>

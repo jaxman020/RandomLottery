@@ -3,17 +3,20 @@ package com.example.randomlottery
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.SimpleAdapter
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
-    lateinit var l1TV : ArrayList<TextView>
-    val l1 = intArrayOf(R.id.l1num0, R.id.l1num1, R.id.l1num2, R.id.l1num3, R.id.l1num4, R.id.l1num5)
-    lateinit var l2TV : ArrayList<TextView>
-    val l2 = intArrayOf(R.id.l2num0, R.id.l2num1, R.id.l2num2, R.id.l2num3, R.id.l2num4, R.id.l2num5)
-    lateinit var l3TV : ArrayList<TextView>
-    val l3 = intArrayOf(R.id.l3num0, R.id.l3num1, R.id.l3num2, R.id.l3num3, R.id.l3num4, R.id.l3num5)
+    private var from = arrayOf("title","num0","num1","num2","num3","num4","num5")
+    private var to = intArrayOf(R.id.itemTitle,R.id.item_num0,R.id.item_num1,R.id.item_num2,R.id.item_num3,R.id.item_num4,R.id.item_num5)
+    private var data = LinkedList<HashMap<String, String>>()
+    private lateinit var adapter : SimpleAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,41 +26,30 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        l1TV = ArrayList()
-        l2TV = ArrayList()
-        l3TV = ArrayList()
-        for (i in 0..5){
-            l1TV.add(findViewById(l1[i]))
-            l1TV[i].setText("-")
-            l2TV.add(findViewById(l2[i]))
-            l2TV[i].setText("-")
-            l3TV.add(findViewById(l3[i]))
-            l3TV[i].setText("-")
-        }
+
+
+        adapter = SimpleAdapter(this, data, R.layout.item, from, to)
+        list.adapter = adapter
     }
 
     fun random(view: View){
-        var a = 0
+        var row = HashMap<String, String>()
+        row.put(from[0], "第" + (data.size + 1) + "組")
 
-        createLottery().forEach{
-            l1TV[a].setText(it.toString())
-            a++
+        var i = 1
+        createLottery().forEach {
+            row.put(from[i], it.toString())
+            i++
         }
-        a = 0
 
-        createLottery().forEach{
-            l2TV[a].setText(it.toString())
-            a++
-        }
-        a = 0
+        data.add(row)
 
-        createLottery().forEach{
-            l3TV[a].setText(it.toString())
-            a++
-        }
+        adapter.notifyDataSetChanged()
+
+        list.smoothScrollToPosition(data.size-1)
     }
 
-    fun createLottery() :IntArray{
+    private fun createLottery() :IntArray{
         var hashSet = HashSet<Int>()
         var ans = IntArray(6)
         var i = 0
